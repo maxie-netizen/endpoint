@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="mb-4">Dashboard</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>API Keys</h5>
+            </div>
+            <div class="card-body">
+                <p>You have {{ api_keys|length }} active API key(s)</p>
+                <a href="{{ url_for('dashboard.api_keys') }}" class="btn btn-primary">Manage API Keys</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Download History</h5>
+            </div>
+            <div class="card-body">
+                <p>Last 10 downloads</p>
+                <a href="#" class="btn btn-primary">View Full History</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <h3>Recent Downloads</h3>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Platform</th>
+                    <th>URL</th>
+                    <th>Format</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for download in download_history %}
+                <tr>
+                    <td>{{ download.platform }}</td>
+                    <td class="text-truncate" style="max-width: 200px;">{{ download.url }}</td>
+                    <td>{{ download.format }}</td>
+                    <td>{{ download.downloaded_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>
+                        <span class="badge bg-{% if download.status == 'success' %}success{% else %}danger{% endif %}">
+                            {{ download.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center">No download history yet</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
