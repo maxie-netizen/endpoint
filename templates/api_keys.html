@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="mb-4">API Keys Management</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Generate New API Key</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('dashboard.generate_api_key') }}">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Key Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="expiry_days" class="form-label">Expiry Days</label>
+                        <input type="number" class="form-control" id="expiry_days" name="expiry_days" value="30" min="1" max="365">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generate API Key</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <h3>Your API Keys</h3>
+    {% if api_keys %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>API Key</th>
+                    <th>Created</th>
+                    <th>Expires</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for key in api_keys %}
+                <tr>
+                    <td>{{ key.name }}</td>
+                    <td>
+                        <code class="api-key">{{ key.key }}</code>
+                        <button class="btn btn-sm btn-outline-secondary copy-btn" data-key="{{ key.key }}">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </td>
+                    <td>{{ key.created_at.strftime('%Y-%m-%d') }}</td>
+                    <td>{{ key.expires_at.strftime('%Y-%m-%d') }}</td>
+                    <td>
+                        <span class="badge bg-{% if key.is_active and key.expires_at > now %}success{% else %}danger{% endif %}">
+                            {% if key.is_active and key.expires_at > now %}Active{% else %}Inactive{% endif %}
+                        </span>
+                    </td>
+                    <td>
+                        {% if key.is_active %}
+                        <a href="{{ url_for('dashboard.revoke_api_key', key_id=key.id) }}" class="btn btn-sm btn-danger">Revoke</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p>You don't have any API keys yet.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const copyButtons = document.querySelectorAll('.copy-btn');
+    copyButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const key = this.getAttribute('data-key');
+            navigator.clipboard.writeText(key).then(() => {
+                const originalHtml = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-check"></i>';
+                setTimeout(() => {
+                    this.innerHTML = originalHtml;
+                }, 2000);
+            });
+        });
+    });
+});
+</script>
+{% endblock %}
