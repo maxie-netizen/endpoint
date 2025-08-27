@@ -1,301 +1,73 @@
-<!-- templates/index.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Media Downloader</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-        }
-        .tab {
-            overflow: hidden;
-            border: 1px solid #ccc;
-            background-color: #f1f1f1;
-            border-radius: 4px;
-        }
-        .tab button {
-            background-color: inherit;
-            float: left;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            padding: 14px 16px;
-            transition: 0.3s;
-        }
-        .tab button:hover {
-            background-color: #ddd;
-        }
-        .tab button.active {
-            background-color: #4CAF50;
-            color: white;
-        }
-        .tabcontent {
-            display: none;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-top: none;
-            border-radius: 0 0 4px 4px;
-        }
-        input, select, button {
-            padding: 10px;
-            margin: 10px 0;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .search-results {
-            margin-top: 20px;
-        }
-        .result-item {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-            cursor: pointer;
-        }
-        .result-item:hover {
-            background-color: #f9f9f9;
-        }
-        .loading {
-            display: none;
-            text-align: center;
-        }
-        .error {
-            color: red;
-            margin: 10px 0;
-        }
-        .success {
-            color: green;
-            margin: 10px 0;
-        }
-    </style>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-section bg-primary text-white py-5 mb-5">
     <div class="container">
-        <h1>Media Downloader</h1>
-        
-        <div class="tab">
-            <button class="tablinks active" onclick="openTab(event, 'Youtube')">YouTube</button>
-            <button class="tablinks" onclick="openTab(event, 'Instagram')">Instagram</button>
-            <button class="tablinks" onclick="openTab(event, 'Tiktok')">TikTok</button>
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold">Media Downloader API</h1>
+                <p class="lead">Powerful API for downloading videos from YouTube, Instagram, and TikTok</p>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg me-2">Get Started</a>
+                <a href="{{ url_for('main.documentation') }}" class="btn btn-outline-light btn-lg">Documentation</a>
+            </div>
+            <div class="col-lg-6">
+                <img src="https://via.placeholder.com/500x300" class="img-fluid rounded" alt="API Illustration">
+            </div>
         </div>
-        
-        <div id="Youtube" class="tabcontent" style="display:block;">
-            <h2>YouTube Downloader</h2>
-            <div>
-                <input type="text" id="youtubeSearch" placeholder="Search YouTube or paste URL">
-                <button onclick="searchYouTube()">Search</button>
-                
-                <div id="youtubeResults" class="search-results"></div>
-                
-                <div id="youtubeOptions" style="display:none;">
-                    <select id="youtubeFormat">
-                        <option value="video">Video</option>
-                        <option value="audio">Audio Only</option>
-                    </select>
-                    <select id="youtubeQuality">
-                        <option value="best">Best Quality</option>
-                        <option value="720p">720p</option>
-                        <option value="480p">480p</option>
-                        <option value="360p">360p</option>
-                    </select>
-                    <button onclick="downloadYouTube()">Download</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row text-center mb-5">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="fab fa-youtube fa-3x text-danger mb-3"></i>
+                    <h3>YouTube Downloads</h3>
+                    <p>Download videos and audio from YouTube in various formats and qualities.</p>
                 </div>
             </div>
         </div>
-        
-        <div id="Instagram" class="tabcontent">
-            <h2>Instagram Downloader</h2>
-            <input type="text" id="instagramUrl" placeholder="Paste Instagram URL">
-            <button onclick="downloadInstagram()">Download</button>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="fab fa-instagram fa-3x text-purple mb-3"></i>
+                    <h3>Instagram Downloads</h3>
+                    <p>Download photos, videos, and reels from Instagram with ease.</p>
+                </div>
+            </div>
         </div>
-        
-        <div id="Tiktok" class="tabcontent">
-            <h2>TikTok Downloader</h2>
-            <input type="text" id="tiktokUrl" placeholder="Paste TikTok URL">
-            <button onclick="downloadTikTok()">Download</button>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="fab fa-tiktok fa-3x text-dark mb-3"></i>
+                    <h3>TikTok Downloads</h3>
+                    <p>Download TikTok videos without watermarks in high quality.</p>
+                </div>
+            </div>
         </div>
-        
-        <div class="loading" id="loading">Processing your request...</div>
-        <div class="error" id="error"></div>
-        <div class="success" id="success"></div>
     </div>
 
-    <script>
-        let currentPlatform = 'youtube';
-        let selectedVideoUrl = '';
-        
-        function openTab(evt, platformName) {
-            var i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tabcontent");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-            }
-            tablinks = document.getElementsByClassName("tablinks");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
-            document.getElementById(platformName).style.display = "block";
-            evt.currentTarget.className += " active";
-            currentPlatform = platformName.toLowerCase();
-        }
-        
-        function searchYouTube() {
-            const query = document.getElementById('youtubeSearch').value;
-            if (!query) {
-                showError('Please enter a search term or URL');
-                return;
-            }
-            
-            // Check if it's a URL
-            if (query.match(/https?:\/\//)) {
-                selectedVideoUrl = query;
-                document.getElementById('youtubeOptions').style.display = 'block';
-                document.getElementById('youtubeResults').innerHTML = '';
-                showSuccess('URL ready for download');
-                return;
-            }
-            
-            showLoading(true);
-            fetch(`/api/search?q=${encodeURIComponent(query)}&platform=youtube`)
-                .then(response => response.json())
-                .then(data => {
-                    showLoading(false);
-                    if (data.success) {
-                        displayResults(data.results);
-                    } else {
-                        showError(data.error || 'Search failed');
-                    }
-                })
-                .catch(error => {
-                    showLoading(false);
-                    showError('Search error: ' + error);
-                });
-        }
-        
-        function displayResults(results) {
-            const resultsDiv = document.getElementById('youtubeResults');
-            resultsDiv.innerHTML = '';
-            
-            if (results.length === 0) {
-                resultsDiv.innerHTML = '<p>No results found</p>';
-                return;
-            }
-            
-            results.forEach(result => {
-                const item = document.createElement('div');
-                item.className = 'result-item';
-                item.innerHTML = `
-                    <h3>${result.title}</h3>
-                    <p>Channel: ${result.uploader}</p>
-                `;
-                item.onclick = () => {
-                    selectedVideoUrl = result.url;
-                    document.getElementById('youtubeOptions').style.display = 'block';
-                    showSuccess('Video selected. Choose format and quality above.');
-                };
-                resultsDiv.appendChild(item);
-            });
-        }
-        
-        function downloadYouTube() {
-            if (!selectedVideoUrl) {
-                showError('Please select a video first');
-                return;
-            }
-            
-            const format = document.getElementById('youtubeFormat').value;
-            const quality = document.getElementById('youtubeQuality').value;
-            
-            downloadMedia(selectedVideoUrl, 'youtube', format, quality);
-        }
-        
-        function downloadInstagram() {
-            const url = document.getElementById('instagramUrl').value;
-            if (!url) {
-                showError('Please enter an Instagram URL');
-                return;
-            }
-            
-            downloadMedia(url, 'instagram');
-        }
-        
-        function downloadTikTok() {
-            const url = document.getElementById('tiktokUrl').value;
-            if (!url) {
-                showError('Please enter a TikTok URL');
-                return;
-            }
-            
-            downloadMedia(url, 'tiktok');
-        }
-        
-        function downloadMedia(url, platform, format = 'video', quality = 'best') {
-            showLoading(true);
-            hideMessages();
-            
-            fetch(`/api/download?url=${encodeURIComponent(url)}&platform=${platform}&format=${format}&quality=${quality}`)
-                .then(response => response.json())
-                .then(data => {
-                    showLoading(false);
-                    if (data.success) {
-                        // Create download link
-                        window.location.href = `/download/${data.id}`;
-                        showSuccess('Download started!');
-                    } else {
-                        showError(data.error || 'Download failed');
-                    }
-                })
-                .catch(error => {
-                    showLoading(false);
-                    showError('Download error: ' + error);
-                });
-        }
-        
-        function showLoading(show) {
-            document.getElementById('loading').style.display = show ? 'block' : 'none';
-        }
-        
-        function showError(message) {
-            hideMessages();
-            const errorDiv = document.getElementById('error');
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
-        }
-        
-        function showSuccess(message) {
-            hideMessages();
-            const successDiv = document.getElementById('success');
-            successDiv.textContent = message;
-            successDiv.style.display = 'block';
-        }
-        
-        function hideMessages() {
-            document.getElementById('error').style.display = 'none';
-            document.getElementById('success').style.display = 'none';
-        }
-    </script>
-</body>
-</html>
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h3>How It Works</h3>
+                </div>
+                <div class="card-body">
+                    <ol>
+                        <li>Create an account and generate your API key</li>
+                        <li>Use our simple REST API to make requests</li>
+                        <li>Get direct download links for your media</li>
+                        <li>Integrate with your applications easily</li>
+                    </ol>
+                    <div class="mt-4">
+                        <h4>Example API Request</h4>
+                        <pre class="bg-light p-3"><code>GET /api/download/youtube?url=https://youtube.com/watch?v=...&format=audio&api_key=YOUR_API_KEY</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
