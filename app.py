@@ -1,44 +1,33 @@
-from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from flask_bcrypt import Bcrypt
-import os
-import uuid
-import datetime
-from functools import wraps
+from flask import Flask
 from config import Config
-
-# Initialize extensions
-db = SQLAlchemy()
-bcrypt = Bcrypt()
-login_manager = LoginManager()
+from extensions import db, bcrypt, login_manager
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
-    
-    # Initialize extensions with app
+
+    # Initialize extensions
     db.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = 'login'
-    
-    # Import models
+
+    # Import models after db is initialized
     from models import User, APIKey, DownloadHistory
-    
+
     # Create tables
     with app.app_context():
         db.create_all()
-    
+
     # Import routes
     from routes import main, auth, api, dashboard
-    
+
     # Register blueprints
     app.register_blueprint(main)
     app.register_blueprint(auth)
     app.register_blueprint(api)
     app.register_blueprint(dashboard)
-    
+
     return app
 
 app = create_app()
