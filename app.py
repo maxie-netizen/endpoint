@@ -1,4 +1,5 @@
 from flask import Flask
+import os
 from config import Config
 from extensions import db, bcrypt, login_manager
 
@@ -10,19 +11,20 @@ def create_app():
     db.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)
-    login_manager.login_view = 'login'
+    login_manager.login_view = 'auth.login'
 
-    # Import models after db is initialized
+    # Import models so SQLAlchemy knows them
     from models import User, APIKey, DownloadHistory
 
-    # Create tables
     with app.app_context():
         db.create_all()
 
-    # Import routes
-    from routes import main, auth, api, dashboard
-
     # Register blueprints
+    from routes.main import main
+    from routes.auth import auth
+    from routes.api import api
+    from routes.dashboard import dashboard
+
     app.register_blueprint(main)
     app.register_blueprint(auth)
     app.register_blueprint(api)
