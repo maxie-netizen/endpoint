@@ -1,5 +1,12 @@
 from flask import render_template
-from app import main
+from flask import Blueprint
+
+main = Blueprint('main', __name__)
+
+@main.route('/')
+def home():
+    return "Welcome to Media Downloader!"
+
 
 @main.route('/')
 def index():
