@@ -1,6 +1,6 @@
-from app import db
+from extensions import db
 from flask_login import UserMixin
-from datetime import datetime, timedelta
+from datetime import datetime
 import secrets
 
 class User(UserMixin, db.Model):
@@ -10,12 +10,13 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_active = db.Column(db.Boolean, default=True)
+
     api_keys = db.relationship('APIKey', backref='user', lazy=True)
     download_history = db.relationship('DownloadHistory', backref='user', lazy=True)
 
 class APIKey(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    key = db.Column(db.String(64), unique=True, nullable=False)
+    key = db.Column(db.String(64), unique=True, nullable=False, default=lambda: secrets.token_hex(32))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -30,3 +31,4 @@ class DownloadHistory(db.Model):
     format = db.Column(db.String(20), nullable=False)
     downloaded_at = db.Column(db.DateTime, default=datetime.utcnow)
     status = db.Column(db.String(20), default='success')
+
